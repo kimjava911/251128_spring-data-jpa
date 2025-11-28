@@ -1,0 +1,75 @@
+package kr.java.jpa.controller;
+
+import jakarta.servlet.http.HttpSession;
+import kr.java.jpa.model.entity.UserInfo;
+import kr.java.jpa.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping
+@RequiredArgsConstructor
+public class UserController {
+    private final UserService userService;
+
+    @GetMapping("/register")
+    public String registerForm() {
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String register(
+            @RequestParam String username,
+            @RequestParam String password,
+            @RequestParam String nickname,
+            @RequestParam String email,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            userService.register(username, password, nickname, email);
+            return "redirect:/login";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/register";
+        }
+    }
+
+    @GetMapping("/login")
+    public String loginForm() {
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(
+            @RequestParam String username,
+            @RequestParam String password,
+            RedirectAttributes redirectAttributes,
+            HttpSession session
+    ) {
+        UserInfo userInfo = userService.login(username, password);
+        if (userInfo == null) {
+            redirectAttributes.addFlashAttribute(
+                    "error", "아이디 또는 비밀번호가 일치하지 않습니다");
+            return "redirect:/login";
+        }
+        session.setAttribute("userInfo", userInfo);
+        return "redirect:/";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+//        session.removeAttribute("userInfo");
+        session.invalidate();
+        return "redirect:/login";
+    }
+
+    @GetMapping
+    public String index() {
+        return "index";
+    }
+}

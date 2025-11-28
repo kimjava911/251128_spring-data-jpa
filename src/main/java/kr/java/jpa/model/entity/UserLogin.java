@@ -38,6 +38,6 @@ public class UserLogin {
     }
 
     // 1:1 관계의 주인 -> userLogin -> 외래키 보유
-    @OneToOne(mappedBy = "userLogin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "userLogin", cascade = CascadeType.ALL)
     private UserInfo userInfo;
 }

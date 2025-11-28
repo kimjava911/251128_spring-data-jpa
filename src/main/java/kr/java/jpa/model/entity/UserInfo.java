@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 //@Data
 @NoArgsConstructor @AllArgsConstructor @Builder // 생성자 관련
 @Getter @Setter // 접근자
-@ToString // 출력
+//@ToString // 출력 -> 순환참조
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,5 +42,15 @@ public class UserInfo {
         if (userLogin != null) {
             userLogin.setUserInfo(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "id=" + id +
+                ", nickname='" + nickname + '\'' +
+                ", email='" + email + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }
